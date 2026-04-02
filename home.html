@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>SpykeHub | Documentation des fonctionnalités</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0f;
+            color: #e8e8f0;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes glowPulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 0.8; }
+            100% { opacity: 0.4; }
+        }
+
+        /* Particles canvas */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            position: relative;
+        }
+
+        .logo {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00e1ff, #aa00ff, #00e1ff);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: gradientShift 3s ease infinite;
+            margin-bottom: 15px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(0, 225, 255, 0.15);
+            border: 1px solid rgba(0, 225, 255, 0.4);
+            border-radius: 50px;
+            padding: 5px 15px;
+            font-size: 0.8rem;
+            color: #00e1ff;
+            margin-bottom: 20px;
+        }
+
+        .description {
+            max-width: 700px;
+            margin: 0 auto;
+            color: #a0a0b0;
+            font-size: 1.1rem;
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin: 40px 0 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-btn {
+            background: rgba(25, 25, 35, 0.8);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(0, 225, 255, 0.2);
+            border-radius: 50px;
+            padding: 10px 24px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #b0b0c0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn i {
+            margin-right: 8px;
+        }
+
+        .nav-btn:hover {
+            border-color: #00e1ff;
+            color: #00e1ff;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, rgba(0, 225, 255, 0.2), rgba(170, 0, 255, 0.2));
+            border-color: #00e1ff;
+            color: #00e1ff;
+            box-shadow: 0 0 15px rgba(0, 225, 255, 0.2);
+        }
+
+        /* Categories */
+        .category {
+            display: none;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .category.active {
+            display: block;
+        }
+
+        /* Cards grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 24px;
+            margin-top: 20px;
+        }
+
+        .feature-card {
+            background: rgba(15, 15, 22, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 225, 255, 0.15);
+            border-radius: 20px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #00e1ff, #aa00ff);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 225, 255, 0.4);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card-icon {
+            font-size: 2.2rem;
+            margin-bottom: 18px;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #fff, #00e1ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .card-desc {
+            color: #a0a0b5;
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .tag {
+            background: rgba(0, 225, 255, 0.1);
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #00e1ff;
+        }
+
+        .tag-hot {
+            background: rgba(255, 60, 80, 0.15);
+            color: #ff5c7a;
+            border: 1px solid rgba(255, 60, 80, 0.3);
+        }
+
+        /* Section titles */
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 30px 0 20px;
+            padding-left: 15px;
+            border-left: 4px solid #00e1ff;
+        }
+
+        .keybind-list {
+            background: rgba(10, 10, 15, 0.6);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .keybind-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .keybind-item:last-child {
+            border-bottom: none;
+        }
+
+        .keybind-name {
+            font-weight: 500;
+        }
+
+        .keybind-key {
+            background: #1a1a24;
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-family: monospace;
+            font-weight: 700;
+            color: #00e1ff;
+            border: 1px solid rgba(0, 225, 255, 0.3);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: #606070;
+            font-size: 0.85rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            .logo {
+                font-size: 2.5rem;
+            }
+            .nav-btn {
+                padding: 6px 16px;
+                font-size: 0.75rem;
+            }
+            .container {
+                padding: 15px;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f0f15;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a2a3a;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00e1ff;
+        }
+
+        /* Status indicators */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 225, 255, 0.1);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.7rem;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00e1ff;
+            animation: glowPulse 1.5s infinite;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="particles-canvas"></canvas>
+
+<div class="container">
+    <div class="header">
+        <div class="badge">
+            <i class="fas fa-shield-alt"></i> Ultimate Roblox Script
+        </div>
+        <div class="logo">
+            <i class="fas fa-bolt"></i> SpykeHub
+        </div>
+        <p class="description">
+            Suite complète de fonctionnalités avancées pour maximiser votre expérience<br>
+            Auto Steal, Admin Panel, Invisible Steal, ESP, Protection et bien plus.
+        </p>
+    </div>
+
+    <div class="nav-tabs">
+        <div class="nav-btn active" data-cat="auto-steal"><i class="fas fa-robot"></i> Auto Steal</div>
+        <div class="nav-btn" data-cat="admin"><i class="fas fa-crown"></i> Admin Panel</div>
+        <div class="nav-btn" data-cat="invisible"><i class="fas fa-eye-slash"></i> Invisible Steal</div>
+        <div class="nav-btn" data-cat="movement"><i class="fas fa-shoe-prints"></i> Movement</div>
+        <div class="nav-btn" data-cat="esp"><i class="fas fa-map-marker-alt"></i> ESP & Visuals</div>
+        <div class="nav-btn" data-cat="protection"><i class="fas fa-shield-virus"></i> Protection</div>
+        <div class="nav-btn" data-cat="utils"><i class="fas fa-tools"></i> Utilities</div>
+        <div class="nav-btn" data-cat="keybinds"><i class="fas fa-keyboard"></i> Keybinds</div>
+    </div>
+
+    <!-- CATEGORY: AUTO STEAL -->
+    <div class="category active" id="cat-auto-steal">
+        <div class="section-title"><i class="fas fa-robot"></i> Auto Steal System</div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-magnet"></i></div>
+                <div class="card-title">Auto Steal Intelligent</div>
+                <div class="card-desc">Vol automatique des animaux (brainrots) avec sélection intelligente. Mode priorité, plus proche ou plus haute valeur.</div>
+                <div class="card-tags"><span class="tag">Nearest</span><span class="tag">Highest</span><span class="tag">Priority List</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-bolt"></i></div>
+                <div class="card-title">Instant Steal</div>
+                <div class="card-desc">Vol instantané sans délai de hold. Déclenche le vol en une fraction de seconde.</div>
+                <div class="card-tags"><span class="tag tag-hot">Ultra Fast</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-list"></i></div>
+                <div class="card-title">Priority List Customizer</div>
+                <div class="card-desc">Créez votre propre liste de priorités. L'auto steal ciblera en priorité les animaux de votre liste.</div>
+                <div class="card-tags"><span class="tag">Customizable</span><span class="tag">Secrets</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="card-title">Best Brainrot HUD</div>
+                <div class="card-desc">Affiche en temps réel le meilleur brainrot disponible avec sa valeur et son propriétaire.</div>
+                <div class="card-tags"><span class="tag">Real-time</span><span class="tag">Info</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-bell"></i></div>
+                <div class="card-title">Priority Alerts</div>
+                <div class="card-desc">Notification visuelle et sonore lorsqu'un brainrot prioritaire apparaît.</div>
+                <div class="card-tags"><span class="tag">Sound Alert</span><span class="tag">Custom Sound</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-chart-simple"></i></div>
+                <div class="card-title">Auto TP on Steal</div>
+                <div class="card-desc">Téléportation automatique vers la cible avant le vol. Mode priorité ou plus haute valeur.</div>
+                <div class="card-tags"><span class="tag">Auto Teleport</span><span class="tag">Smart</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CATEGORY: ADMIN PANEL -->
+    <div class="category" id="cat-admin">
+        <div class="section-title"><i class="fas fa-crown"></i> Admin Panel</div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-users"></i></div>
+                <div class="card-title">Player List</div>
+                <div class="card-desc">Liste complète des joueurs avec leurs statuts (stealing, brainrot actuel). Tri intelligent par priorité.</div>
+                <div class="card-tags"><span class="tag">Auto-sort</span><span class="tag">Status</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-rocket"></i></div>
+                <div class="card-title">Admin Commands</div>
+                <div class="card-desc">Exécutez toutes les commandes admin d'un clic : balloon, ragdoll, jail, rocket, inverse, etc.</div>
+                <div class="card-tags"><span class="tag">Balloon</span><span class="tag">Ragdoll</span><span class="tag">Jail</span><span class="tag">Rocket</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-crosshairs"></i></div>
+                <div class="card-title">Click To AP</div>
+                <div class="card-desc">Ciblez un joueur en le regardant et cliquez pour exécuter les commandes admin. Mode simple commande ou spam total.</div>
+                <div class="card-tags"><span class="tag">Aim-based</span><span class="tag">Configurable</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-ruler-combined"></i></div>
+                <div class="card-title">Proximity AP</div>
+                <div class="card-desc">Spamme automatiquement les commandes admin sur les joueurs proches. Rayon configurable.</div>
+                <div class="card-tags"><span class="tag">Auto-Spam</span><span class="tag">Range Slider</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-ban"></i></div>
+                <div class="card-title">Spam Owner</div>
+                <div class="card-desc">Spamme toutes les commandes admin sur le propriétaire de la base la plus proche.</div>
+                <div class="card-tags"><span class="tag">One-Click</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CATEGORY: INVISIBLE STEAL -->
+    <div class="category" id="cat-invisible">
+        <div class="section-title"><i class="fas fa-eye-slash"></i> Invisible Steal System</div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-ghost"></i></div>
+                <div class="card-title">Invisible Steal</div>
+                <div class="card-desc">Devient invisible pendant le vol. Rotation et profondeur configurables. Évite la détection.</div>
+                <div class="card-tags"><span class="tag">Rotation</span><span class="tag">Depth Control</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-sync-alt"></i></div>
+                <div class="card-title">Auto Fix Lagback</div>
+                <div class="card-desc">Détecte et corrige automatiquement les lagbacks pendant l'invisible steal.</div>
+                <div class="card-tags"><span class="tag">Anti-Lagback</span><span class="tag">Auto-Recovery</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-arrow-rotate-left"></i></div>
+                <div class="card-title">Auto Invis During Steal</div>
+                <div class="card-desc">Active automatiquement l'invisible steal quand vous commencez à voler.</div>
+                <div class="card-tags"><span class="tag">Automation</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CATEGORY: MOVEMENT -->
+    <div class="category" id="cat-movement">
+        <div class="section-title"><i class="fas fa-shoe-prints"></i> Movement Features</div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-flying-carpet"></i></div>
+                <div class="card-title">Carpet Speed Boost</div>
+                <div class="card-desc">Augmente la vitesse de votre tapis volant jusqu'à 140. Active/désactive avec une touche.</div>
+                <div class="card-tags"><span class="tag">140 Speed</span><span class="tag">Toggle</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-jump"></i></div>
+                <div class="card-title">Infinite Jump</div>
+                <div class="card-desc">Saut infini avec contrôle de hauteur. Parfait pour explorer la map.</div>
+                <div class="card-tags"><span class="tag">Unlimited</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-dice-d6"></i></div>
+                <div class="card-title">Steal Speed</div>
+                <div class="card-desc">Boost de vitesse personnalisable (5 à 100) activable pendant les vols.</div>
+                <div class="card-tags"><span class="tag">Slider 5-100</span><span class="tag">Auto on Steal</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-clone"></i></div>
+                <div class="card-title">Instant Clone</div>
+                <div class="card-desc">Clone instantané via le Quantum Cloner. Téléportation automatique au clone.</div>
+                <div class="card-tags"><span class="tag">Quantum Cloner</span><span class="tag">Auto-TP</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CATEGORY: ESP & VISUALS -->
+    <div class="category" id="cat-esp">
+        <div class="section-title"><i class="fas fa-map-marker-alt"></i> ESP & Visuals</div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-dragon"></i></div>
+                <div class="card-title">Brainrot ESP</div>
+                <div class="card-desc">Affiche des billboards sur chaque animal avec son nom, sa valeur et sa mutation (couleur spéciale).</div>
+                <div class="card-tags"><span class="tag">Mutation Colors</span><span class="tag">Value Display</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-user-astronaut"></i></div>
+                <div class="card-title">Player ESP</div>
+                <div class="card-desc">Affiche les noms des joueurs au-dessus de leurs têtes avec un style personnalisé.</div>
+                <div class="card-tags"><span class="tag">Name Tags</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="card-title">Tracer & Line to Base</div>
+                <div class="card-desc">Ligne de visée vers la cible actuelle. Option ligne vers votre propre base.</div>
+                <div class="card-tags"><span class="tag">Beam Effect</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-eye"></i></div>
+                <div class="card-title">X-Ray / Wallhack</div>
+                <div class="card-desc">Rend les murs transparents pour voir à travers les bases.</div>
+                <div class="card-tags"><span class="tag">See Through Walls</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-bomb"></i></div>
+                <div class="card-title">Subspace Mine ESP</div>
+                <div class="card-desc">Affiche les mines subspace avec le nom du propriétaire.</div>
+                <div class="card-tags"><span class="tag">Mine Detection</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-clock"></i></div>
+                <div class="card-title">Timer ESP</div>
+                <div class="card-desc">Affiche les timers de déverrouillage des bases.</div>
+                <div class="card-tags"><span class="tag">Unlock Timers</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-chart-simple"></i></div>
+                <div class="card-title">FPS Boost & FOV Control</div>
+                <div class="card-desc">Optimisation FPS (suppression effets inutiles) et contrôle du champ de vision.</div>
+                <div class="card-tags"><span class="tag">Performance</span><span class="tag">FOV Slider</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CATEGORY: PROTECTION -->
+    <div class="category" id="cat-protection">
+        <div class="section-title"><i class="fas fa-shield-virus"></i> Protection Systems</div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-bed"></i></div>
+                <div class="card-title">Anti-Ragdoll (V1 & V2)</div>
+                <div class="card-desc">Empêche d'être ragdollisé. Deux versions pour une compatibilité maximale.</div>
+                <div class="card-tags"><span class="tag">Ragdoll Block</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-bug"></i></div>
+                <div class="card-title">Anti-Bee & Anti-Disco</div>
+                <div class="card-desc">Supprime les effets de désorientation (abeilles, disco, blur, etc.).</div>
+                <div class="card-tags"><span class="tag">Bee Removal</span><span class="tag">Disco Block</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-turret"></i></div>
+                <div class="card-title">Auto-Destroy Turrets</div>
+                <div class="card-desc">Détruit automatiquement les tourelles Sentinel à proximité.</div>
+                <div class="card-tags"><span class="tag">Sentry Killer</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-sync"></i></div>
+                <div class="card-title">Auto Reset on Balloon</div>
+                <div class="card-desc">Reset automatique quand quelqu'un vous met un ballon.</div>
+                <div class="card-tags"><span class="tag">Anti-Balloon</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-unlock-alt"></i></div>
+                <div class="card-title">Auto Unlock on Steal</div>
+                <div class="card-desc">Déverrouille automatiquement les portes pendant le vol.</div>
+                <div class="card-tags"><span class="tag">Auto Unlock</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CATEGORY: UTILITIES -->
+    <div class="category" id="cat-utils">
+        <div class="section-title"><i class="fas fa-tools"></i> Utilities</div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-door-open"></i></div>
+                <div class="card-title">Job ID Joiner</div>
+                <div class="card-desc">Rejoignez n'importe quel serveur par son Job ID avec tentatives et délai configurables.</div>
+                <div class="card-tags"><span class="tag">Server Joiner</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-desktop"></i></div>
+                <div class="card-title">Mobile Support</div>
+                <div class="card-desc">Interface adaptée aux mobiles avec boutons tactiles et échelle ajustable.</div>
+                <div class="card-tags"><span class="tag">Touch Controls</span><span class="tag">Responsive</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-arrows-alt"></i></div>
+                <div class="card-title">Draggable UIs</div>
+                <div class="card-desc">Toutes les interfaces sont déplaçables. Positions sauvegardées.</div>
+                <div class="card-tags"><span class="tag">Save Positions</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="card-title">Performance HUD</div>
+                <div class="card-desc">Affiche FPS et ping en temps réel avec code couleur.</div>
+                <div class="card-tags"><span class="tag">FPS</span><span class="tag">Ping</span></div>
+            </div>
+            <div class="feature-card">
+                <div class="card-icon"><i class="fas fa-trash-alt"></i></div>
+                <div class="card-title">Clean Error GUIs</div>
+                <div class="card-desc">Nettoie automatiquement les interfaces d'erreur.</div>
+                <div class="card-tags"><span class="tag">Auto Clean</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CATEGORY: KEYBINDS -->
+    <div class="category" id="cat-keybinds">
+        <div class="section-title"><i class="fas fa-keyboard"></i> Keybinds Configuration</div>
+        <div class="keybind-list">
+            <div class="keybind-item"><span class="keybind-name"><i class="fas fa-arrow-right"></i> Teleport</span><span class="keybind-key">T</span></div>
+            <div class="keybind-item"><span class="keybind-name"><i class="fas fa-clone"></i> Clone</span><span class="keybind-key">V</span></div>
+            <div class="keybind-item"><span class="keybind-name"><i class="fas fa-tachometer-alt"></i> Carpet Speed</span><span class="keybind-key">Q</span></div>
+            <div class="keybind-item"><span class="keybind-name"><i class="fas fa-running"></i> Steal Speed</span><span class="keybind-key">C</span></div>
+            <div class="keybind-item"><span class="keybind-name"><i class="fas fa-eye-slash"></i> Invisible Steal</span><span class="keybind-key">I</span></div>
+            <div class="keybind-item"><span class="keybind-name"><i class="fas fa-sync-alt"></i> Reset</span><span class="keybind-key">X</span></div>
+            <div class="keybind-item"><span class="keybind-name"><i class="fas fa-user-slash"></i> Ragdoll Self</span><span class="keybind-key">R</span></div>
+            <div class="keybind-item"><span class="keybind-name"><i class="fas fa-door-open"></i> Job Joiner</span><span class="keybind-key">J</span></div>
+            <div class="keybind-item"><span class="keybind-name"><i class="fas fa-crown"></i> Proximity AP</span><span class="keybind-key">P</span></div>
+            <div class="keybind-item"><span class="keybind-name"><i class="fas fa-cog"></i> Menu Toggle</span><span class="keybind-key">U</span></div>
+        </div>
+        <p style="color:#a0a0b0; margin-top:15px;"><i class="fas fa-info-circle"></i> Toutes les touches sont personnalisables via le menu Settings.</p>
+    </div>
+
+    <div class="footer">
+        <p><i class="fas fa-code"></i> SpykeHub - Premium Script Features</p>
+        <p style="margin-top: 8px;">Fonctionnalités complètes pour dominer le jeu • Mises à jour régulières</p>
+    </div>
+</div>
+
+<script>
+    // Particules en arrière-plan
+    const canvas = document.getElementById('particles-canvas');
+    const ctx = canvas.getContext('2d');
+    
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    
+    const particles = [];
+    const PARTICLE_COUNT = 80;
+    
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            radius: Math.random() * 2 + 1,
+            alpha: Math.random() * 0.5 + 0.1,
+            speedX: (Math.random() - 0.5) * 0.3,
+            speedY: (Math.random() - 0.5) * 0.3,
+        });
+    }
+    
+    function animateParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let p of particles) {
+            p.x += p.speedX;
+            p.y += p.speedY;
+            if (p.x < 0) p.x = canvas.width;
+            if (p.x > canvas.width) p.x = 0;
+            if (p.y < 0) p.y = canvas.height;
+            if (p.y > canvas.height) p.y = 0;
+            
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(0, 225, 255, ${p.alpha * 0.4})`;
+            ctx.fill();
+        }
+        requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+    
+    // Navigation entre catégories
+    const navBtns = document.querySelectorAll('.nav-btn');
+    const categories = document.querySelectorAll('.category');
+    
+    navBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const catId = btn.getAttribute('data-cat');
+            navBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            categories.forEach(cat => {
+                cat.classList.remove('active');
+                if (cat.id === `cat-${catId}`) {
+                    cat.classList.add('active');
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    });
+    
+    // Effet de survol sur les cartes
+    const cards = document.querySelectorAll('.feature-card');
+    cards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty('--mouse-x', `${x}px`);
+            card.style.setProperty('--mouse-y', `${y}px`);
+        });
+    });
+</script>
+</body>
+</html>
